@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Traffic light logic definitions -->
+<tlLogics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tllogic_file.xsd">
+    <tlLogic id="intersection1" type="static" programID="0" offset="0">
+        <!-- Phase 0: North-South Straight + Right Turn Green -->
+        <!-- Permite: Norte->Sul (reto), Norte->Leste (direita), Sul->Norte (reto), Sul->Oeste (direita) -->
+        <phase duration="25" state="GGrrrrGGrrrr"/>
+
+        <!-- Phase 1: North-South Straight Yellow, Left Turn Green -->
+        <phase duration="3" state="yyrrrryyrrrr"/>
+
+        <!-- Phase 2: North-South Left Turn Green (Protected) -->
+        <!-- Permite: Norte->Oeste (esquerda), Sul->Leste (esquerda) -->
+        <phase duration="10" state="rrGrrrrrGrrr"/>
+
+        <!-- Phase 3: North-South All Yellow -->
+        <phase duration="3" state="rryrrrrryrrr"/>
+
+        <!-- Phase 4: East-West Straight + Right Turn Green -->
+        <!-- Permite: Leste->Oeste (reto), Leste->Sul (direita), Oeste->Leste (reto), Oeste->Norte (direita) -->
+        <phase duration="25" state="rrrGGrrrrGGr"/>
+
+        <!-- Phase 5: East-West Straight Yellow, Left Turn Green -->
+        <phase duration="3" state="rrryyrrrryyy"/>
+
+        <!-- Phase 6: East-West Left Turn Green (Protected) -->
+        <!-- Permite: Leste->Norte (esquerda), Oeste->Sul (esquerda) -->
+        <phase duration="10" state="rrrrrGrrrrrG"/>
+
+        <!-- Phase 7: East-West All Yellow -->
+        <phase duration="3" state="rrrrryrrrrry"/>
+    </tlLogic>
+</tlLogics>

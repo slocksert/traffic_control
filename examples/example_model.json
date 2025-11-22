@@ -1,0 +1,8 @@
+{
+  "q_table": {},
+  "learning_rate": 0.3,
+  "discount_factor": 0.8,
+  "epsilon": 0.1,
+  "episodes_trained": 0,
+  "description": "Example Q-Learning model - train your own with: python main.py --mode train --episodes 50"
+}

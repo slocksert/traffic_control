@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GUI Settings for better visualization -->
+<viewsettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/viewsettings_file.xsd">
+    <scheme name="real world"/>
+    <delay value="0"/>
+    <viewport zoom="500" x="200" y="200" z="82" angle="0"/>
+    <background backgroundColor="white" showGrid="1" gridXSize="50" gridYSize="50"/>
+    
+    <edge>
+        <colorScheme name="by speed" interpolated="1">
+            <entry color="red" threshold="0"/>
+            <entry color="yellow" threshold="35"/>
+            <entry color="green" threshold="70"/>
+        </colorScheme>
+        <widthScheme name="by speed" interpolated="1">
+            <entry width="1" threshold="0"/>
+            <entry width="2" threshold="35"/>
+            <entry width="3" threshold="70"/>
+        </widthScheme>
+    </edge>
+    
+    <vehicle>
+        <colorScheme name="by speed" interpolated="1">
+            <entry color="red" threshold="0"/>
+            <entry color="yellow" threshold="20"/>
+            <entry color="green" threshold="40"/>
+        </colorScheme>
+        <sizeScheme name="by speed" interpolated="1">
+            <entry size="0.8" threshold="0"/>
+            <entry size="1.2" threshold="20"/>
+            <entry size="1.5" threshold="40"/>
+        </sizeScheme>
+    </vehicle>
+    
+    <junction>
+        <colorScheme name="uniform" interpolated="0">
+            <entry color="black" threshold="0"/>
+        </colorScheme>
+    </junction>
+</viewsettings>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-11-21 20:15:26 by Eclipse SUMO sumo Version 1.18.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="sumo_config/intersection.net.xml"/>
+        <route-files value="sumo_config/routes.rou.xml"/>
+    </input>
+
+    <output>
+        <summary-output value="sumo_config/summary.xml"/>
+        <tripinfo-output value="sumo_config/tripinfo.xml"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+        <step-length value="1.0"/>
+    </time>
+
+    <processing>
+        <lateral-resolution value="0.8"/>
+        <ignore-route-errors value="true"/>
+        <time-to-teleport value="-1"/>
+        <waiting-time-memory value="300"/>
+    </processing>
+
+    <report>
+        <xml-validation value="never"/>
+        <no-warnings value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <traci_server>
+        <remote-port value="43695"/>
+    </traci_server>
+
+    <random_number>
+        <seed value="42"/>
+    </random_number>
+
+    <gui_only>
+        <gui-settings-file value="sumo_config/gui-settings.xml"/>
+        <quit-on-end value="true"/>
+    </gui_only>
+
+</configuration>
+-->
+
+<tripinfos xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tripinfo_file.xsd">
+    <tripinfo id="flow_north_south.0" depart="0.00" departLane="north_in_0" departPos="5.10" departPosLat="0.00" departSpeed="0.00" departDelay="0.00" arrival="34.00" arrivalLane="south_out_0" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="12.77" duration="34.00" routeLength="394.90" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="4.01" rerouteNo="0" devices="tripinfo_flow_north_south.0" vType="car" speedFactor="0.95" vaporized=""/>
+    <tripinfo id="flow_south_north.0" depart="0.00" departLane="south_in_0" departPos="5.10" departPosLat="0.00" departSpeed="0.00" departDelay="0.00" arrival="36.00" arrivalLane="north_out_0" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="11.07" duration="36.00" routeLength="394.90" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="3.69" rerouteNo="0" devices="tripinfo_flow_south_north.0" vType="car" speedFactor="0.88" vaporized=""/>
+    <tripinfo id="flow_south_east.0" depart="3.00" departLane="south_in_0" departPos="5.10" departPosLat="0.00" departSpeed="0.00" departDelay="3.00" arrival="40.00" arrivalLane="east_out_1" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="11.76" duration="37.00" routeLength="388.29" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="5.75" rerouteNo="0" devices="tripinfo_flow_south_east.0" vType="car" speedFactor="0.93" vaporized=""/>
+    <tripinfo id="flow_east_west.0" depart="0.00" departLane="east_in_0" departPos="5.10" departPosLat="0.00" departSpeed="0.00" departDelay="0.00" arrival="42.00" arrivalLane="west_out_0" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="13.68" duration="42.00" routeLength="394.90" waitingTime="3.00" waitingCount="1" stopTime="0.00" timeLoss="13.95" rerouteNo="0" devices="tripinfo_flow_east_west.0" vType="car" speedFactor="1.03" vaporized=""/>
+    <tripinfo id="flow_east_north.0" depart="3.00" departLane="east_in_0" departPos="5.10" departPosLat="0.00" departSpeed="0.00" departDelay="3.00" arrival="44.00" arrivalLane="north_out_1" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="15.58" duration="41.00" routeLength="388.29" waitingTime="1.00" waitingCount="1" stopTime="0.00" timeLoss="15.46" rerouteNo="0" devices="tripinfo_flow_east_north.0" vType="car" speedFactor="1.13" vaporized=""/>
+    <tripinfo id="flow_west_east.0" depart="0.00" departLane="west_in_0" departPos="5.10" departPosLat="0.00" departSpeed="0.00" departDelay="0.00" arrival="45.00" arrivalLane="east_out_0" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="11.07" duration="45.00" routeLength="394.90" waitingTime="3.00" waitingCount="1" stopTime="0.00" timeLoss="10.79" rerouteNo="0" devices="tripinfo_flow_west_east.0" vType="car" speedFactor="0.84" vaporized=""/>
+    <tripinfo id="flow_buses.0" depart="10.00" departLane="east_in_0" departPos="15.10" departPosLat="0.00" departSpeed="0.00" departDelay="10.00" arrival="50.00" arrivalLane="west_out_0" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="15.99" duration="40.00" routeLength="384.90" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="15.88" rerouteNo="0" devices="tripinfo_flow_buses.0" vType="bus" speedFactor="1.16" vaporized=""/>
+    <tripinfo id="flow_west_east.1" depart="18.00" departLane="west_in_0" departPos="5.10" departPosLat="0.00" departSpeed="0.00" departDelay="0.00" arrival="51.00" arrivalLane="east_out_0" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="13.13" duration="33.00" routeLength="394.90" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="4.29" rerouteNo="0" devices="tripinfo_flow_west_east.1" vType="car" speedFactor="0.99" vaporized=""/>
+    <tripinfo id="flow_east_west.1" depart="20.00" departLane="east_in_0" departPos="5.10" departPosLat="0.00" departSpeed="0.00" departDelay="0.00" arrival="57.00" arrivalLane="west_out_0" arrivalPos="189.60" arrivalPosLat="0.00" arrivalSpeed="11.27" duration="37.00" routeLength="394.90" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="4.38" rerouteNo="0" devices="tripinfo_flow_east_west.1" vType="car" speedFactor="0.88" vaporized=""/>

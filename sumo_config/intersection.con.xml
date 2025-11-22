@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Connection definitions for intersection -->
+<connections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
+    <!-- North to other directions -->
+    <connection from="north_in" to="south_out" fromLane="0" toLane="0"/>  <!-- straight -->
+    <connection from="north_in" to="east_out" fromLane="1" toLane="0"/>   <!-- right turn -->
+    <connection from="north_in" to="west_out" fromLane="1" toLane="1"/>   <!-- left turn -->
+
+    <!-- South to other directions -->
+    <connection from="south_in" to="north_out" fromLane="0" toLane="0"/>  <!-- straight -->
+    <connection from="south_in" to="west_out" fromLane="1" toLane="0"/>   <!-- right turn -->
+    <connection from="south_in" to="east_out" fromLane="1" toLane="1"/>   <!-- left turn -->
+
+    <!-- East to other directions -->
+    <connection from="east_in" to="west_out" fromLane="0" toLane="0"/>    <!-- straight -->
+    <connection from="east_in" to="south_out" fromLane="1" toLane="0"/>   <!-- right turn -->
+    <connection from="east_in" to="north_out" fromLane="1" toLane="1"/>   <!-- left turn -->
+
+    <!-- West to other directions -->
+    <connection from="west_in" to="east_out" fromLane="0" toLane="0"/>    <!-- straight -->
+    <connection from="west_in" to="north_out" fromLane="1" toLane="0"/>   <!-- right turn -->
+    <connection from="west_in" to="south_out" fromLane="1" toLane="1"/>   <!-- left turn -->
+</connections>

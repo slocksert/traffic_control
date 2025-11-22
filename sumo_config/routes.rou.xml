@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Route definitions -->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- Vehicle types -->
+    <vType id="car" accel="2.5" decel="4.5" sigma="0.5" length="5" maxSpeed="50" color="1,1,0"/>
+    <vType id="truck" accel="1.5" decel="3.5" sigma="0.3" length="12" maxSpeed="40" color="0,1,0"/>
+    <vType id="bus" accel="1.2" decel="3.0" sigma="0.2" length="15" maxSpeed="35" color="0,0,1"/>
+    
+    <!-- Routes from North -->
+    <route id="north_to_south" edges="north_in south_out"/>
+    <route id="north_to_east" edges="north_in east_out"/>
+    <route id="north_to_west" edges="north_in west_out"/>
+    
+    <!-- Routes from South -->
+    <route id="south_to_north" edges="south_in north_out"/>
+    <route id="south_to_east" edges="south_in east_out"/>
+    <route id="south_to_west" edges="south_in west_out"/>
+    
+    <!-- Routes from East -->
+    <route id="east_to_west" edges="east_in west_out"/>
+    <route id="east_to_north" edges="east_in north_out"/>
+    <route id="east_to_south" edges="east_in south_out"/>
+    
+    <!-- Routes from West -->
+    <route id="west_to_east" edges="west_in east_out"/>
+    <route id="west_to_north" edges="west_in north_out"/>
+    <route id="west_to_south" edges="west_in south_out"/>
+    
+    <!-- Traffic flows -->
+    <!-- North flows -->
+    <flow id="flow_north_south" route="north_to_south" begin="0" end="3600" vehsPerHour="200" type="car"/>
+    <flow id="flow_north_east" route="north_to_east" begin="0" end="3600" vehsPerHour="100" type="car"/>
+    <flow id="flow_north_west" route="north_to_west" begin="0" end="3600" vehsPerHour="80" type="car"/>
+    
+    <!-- South flows -->
+    <flow id="flow_south_north" route="south_to_north" begin="0" end="3600" vehsPerHour="180" type="car"/>
+    <flow id="flow_south_east" route="south_to_east" begin="0" end="3600" vehsPerHour="90" type="car"/>
+    <flow id="flow_south_west" route="south_to_west" begin="0" end="3600" vehsPerHour="70" type="car"/>
+    
+    <!-- East flows (REDUZIDO: de 415 para 350 total) -->
+    <flow id="flow_east_west" route="east_to_west" begin="0" end="3600" vehsPerHour="180" type="car"/>
+    <flow id="flow_east_north" route="east_to_north" begin="0" end="3600" vehsPerHour="90" type="car"/>
+    <flow id="flow_east_south" route="east_to_south" begin="0" end="3600" vehsPerHour="80" type="car"/>
+
+    <!-- West flows (AUMENTADO: de 360 para 380 total) -->
+    <flow id="flow_west_east" route="west_to_east" begin="0" end="3600" vehsPerHour="200" type="car"/>
+    <flow id="flow_west_north" route="west_to_north" begin="0" end="3600" vehsPerHour="100" type="car"/>
+    <flow id="flow_west_south" route="west_to_south" begin="0" end="3600" vehsPerHour="80" type="car"/>
+    
+    <!-- Add some trucks and buses for variety -->
+    <flow id="flow_trucks" route="north_to_south" begin="0" end="3600" vehsPerHour="20" type="truck"/>
+    <flow id="flow_buses" route="east_to_west" begin="0" end="3600" vehsPerHour="15" type="bus"/>
+</routes>

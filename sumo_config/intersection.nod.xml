@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Node definitions for intersection -->
+<nodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <!-- Center intersection -->
+    <node id="center" x="0.0" y="0.0" type="traffic_light" tl="intersection1"/>
+    
+    <!-- External nodes -->
+    <node id="north" x="0.0" y="200.0" type="priority"/>
+    <node id="south" x="0.0" y="-200.0" type="priority"/>
+    <node id="east" x="200.0" y="0.0" type="priority"/>
+    <node id="west" x="-200.0" y="0.0" type="priority"/>
+</nodes>

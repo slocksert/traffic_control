@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SUMO Configuration file - Fast Training Version -->
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+    <input>
+        <net-file value="intersection.net.xml"/>
+        <route-files value="routes.rou.xml"/>
+    </input>
+    
+    <output>
+        <summary-output value="summary.xml"/>
+        <tripinfo-output value="tripinfo.xml"/>
+    </output>
+    
+    <time>
+        <begin value="0"/>
+        <end value="1800"/>    <!-- Reduced from 3600s to 1800s (30 min) -->
+        <step-length value="2"/>  <!-- Increased from 1s to 2s for faster simulation -->
+    </time>
+    
+    <processing>
+        <lateral-resolution value="0.8"/>
+        <ignore-route-errors value="true"/>
+        <time-to-teleport value="-1"/>
+        <waiting-time-memory value="300"/>
+    </processing>
+    
+    <traci_server>
+        <remote-port value="8813"/>
+    </traci_server>
+    
+    <gui_only>
+        <gui-settings-file value="gui-settings.xml"/>
+    </gui_only>
+    
+    <report>
+        <xml-validation value="never"/>
+        <no-warnings value="true"/>
+        <no-step-log value="true"/>
+    </report>
+    
+    <random_number>
+        <seed value="42"/>
+    </random_number>
+</configuration>
