@@ -139,9 +139,12 @@ class SumoTrafficController:
                 episode_metrics.append(info["metrics"])
 
                 if step_count % 100 == 0:
+                    # Get current vehicle count from state (index 10 is total_vehicles)
+                    active_vehicles = int(state[10])
                     print(
                         f"Step {step_count}: Reward={reward:.2f}, "
-                        f"Vehicles={info['metrics'].throughput}, "
+                        f"Active={active_vehicles}, "
+                        f"Completed={info['vehicles_completed']}, "
                         f"Phase={info['phase']}"
                     )
 
@@ -667,6 +670,7 @@ def main():
         "mode": Args.mode,
         "agent_type": Args.agent,
         "num_episodes": Args.episodes,
+        "test_episodes": Args.episodes,  # Added for test mode
         "sumo_config": (
             "sumo_config/intersection_fast.sumocfg"
             if Args.fast

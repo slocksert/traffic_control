@@ -35,6 +35,9 @@ python main.py --mode train --agent qlearning --episodes 50 --no-gui --fast
 
 # Testar modelo treinado
 python main.py --mode test --load-model models/modelo_treinado.json
+
+# Para testar modelo já treinado com 100 episódios
+python main.py --mode test --agent qlearning --load-model examples/sumo_qlearning_final.json
 ```
 
 ## Features
@@ -89,11 +92,6 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 # CPU only
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 ```
-
-**Para AMD Radeon RX 9070 XT (gfx1201):**
-- ROCm 7 oficialmente suporta esta GPU
-- Use PyTorch com ROCm 6.3+ ou nightly builds
-- Execute: `./install_pytorch_rocm7.sh` para instalacao automatica
 
 ## Argumentos Disponiveis
 

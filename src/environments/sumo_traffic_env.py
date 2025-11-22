@@ -69,6 +69,11 @@ class SumoTrafficEnv:
         self.completed_vehicles = set()
         self.vehicle_start_times = {}
 
+        # Track previous metrics for delta-based rewards
+        self.prev_total_queue = 0
+        self.prev_avg_waiting = 0.0
+        self.prev_avg_speed = 0.0
+
         self.connection_label = f"intersection_{self.seed}"
         self.sumo_cmd = None
         self.connected = False
@@ -122,6 +127,11 @@ class SumoTrafficEnv:
         self.completed_vehicles = set()
         self.vehicle_start_times = {}
 
+        # Reset previous metrics for delta-based rewards
+        self.prev_total_queue = 0
+        self.prev_avg_waiting = 0.0
+        self.prev_avg_speed = 0.0
+
         traci.trafficlight.setPhase(self.tl_id, self.current_phase.value)
 
         for _ in range(5):
@@ -139,6 +149,9 @@ class SumoTrafficEnv:
         # Advance simulation
         traci.simulationStep()
         self.phase_duration += self.step_length
+
+        # Cache vehicle IDs once per step for optimization
+        self._cached_vehicle_ids = traci.vehicle.getIDList()
 
         # Update vehicle tracking
         self._update_vehicle_tracking()
@@ -158,6 +171,10 @@ class SumoTrafficEnv:
             "timestep": self.episode_stats["timestep"],
             **self.episode_stats,
         }
+
+        # Clear caches
+        self._cached_vehicle_ids = None
+        self._cached_avg_speed = None
 
         return self.get_state(), reward, done, info
 
@@ -207,7 +224,11 @@ class SumoTrafficEnv:
 
     def _update_vehicle_tracking(self):
         """Update vehicle tracking for statistics"""
-        current_vehicles = set(traci.vehicle.getIDList())
+        # Use cached vehicle IDs if available
+        if hasattr(self, '_cached_vehicle_ids') and self._cached_vehicle_ids is not None:
+            current_vehicles = set(self._cached_vehicle_ids)
+        else:
+            current_vehicles = set(traci.vehicle.getIDList())
         current_time = traci.simulation.getTime()
 
         new_vehicles = current_vehicles - self.active_vehicles
@@ -238,41 +259,46 @@ class SumoTrafficEnv:
                 del self.vehicle_start_times[veh_id]
 
     def _calculate_metrics(self) -> TrafficMetrics:
-        """Calculate current traffic metrics"""
-        # Get all vehicles
-        vehicle_ids = traci.vehicle.getIDList()
-
-        # Calculate waiting time (acumula com step_length)
-        total_waiting = sum(
-            traci.vehicle.getWaitingTime(veh_id) for veh_id in vehicle_ids
-        )
-        self.episode_stats["total_waiting_time"] += total_waiting
-
-        # Calculate average speed
-        if vehicle_ids:
-            avg_speed = np.mean(
-                [traci.vehicle.getSpeed(veh_id) for veh_id in vehicle_ids]
-            )
+        """Calculate current traffic metrics (optimized)"""
+        # Use cached vehicle IDs if available
+        if hasattr(self, '_cached_vehicle_ids') and self._cached_vehicle_ids is not None:
+            vehicle_ids = self._cached_vehicle_ids
         else:
-            avg_speed = 0
+            vehicle_ids = traci.vehicle.getIDList()
+
+        # Optimize: Calculate waiting time, speed, and emissions in single loop
+        total_waiting = 0.0
+        total_speed = 0.0
+        total_emissions = 0.0
+
+        if vehicle_ids:
+            for veh_id in vehicle_ids:
+                try:
+                    total_waiting += traci.vehicle.getWaitingTime(veh_id)
+                    total_speed += traci.vehicle.getSpeed(veh_id)
+                    total_emissions += traci.vehicle.getCO2Emission(veh_id)
+                except Exception:
+                    # Vehicle may have left during iteration
+                    continue
+
+            avg_speed = total_speed / len(vehicle_ids)
+        else:
+            avg_speed = 0.0
+
+        # Cache average speed for reuse in get_state()
+        self._cached_avg_speed = avg_speed
+
+        self.episode_stats["total_waiting_time"] += total_waiting
+        self.episode_stats["total_emissions"] += total_emissions
 
         # Calculate queue lengths per direction
         queue_lengths = self._get_queue_lengths()
 
+        # Calculate throughput (vehicles completed this step)
         current_completed = len(self.completed_vehicles)
         prev_completed = self.episode_stats.get("prev_completed", 0)
         throughput = max(0, current_completed - prev_completed)
         self.episode_stats["prev_completed"] = current_completed
-
-        total_emissions = 0
-        if vehicle_ids:
-            try:
-                total_emissions = sum(
-                    traci.vehicle.getCO2Emission(veh_id) for veh_id in vehicle_ids
-                )
-            except Exception:
-                total_emissions = 0
-        self.episode_stats["total_emissions"] += total_emissions
 
         # Average travel time
         avg_travel_time = self.episode_stats["total_travel_time"] / max(
@@ -311,62 +337,81 @@ class SumoTrafficEnv:
         return queue_lengths
 
     def _calculate_reward(self, metrics: TrafficMetrics, action_reward: float) -> float:
-        """Calculate reward based on traffic metrics"""
+        """Calculate reward based on traffic metrics (delta-based to avoid congestion bias)"""
         reward = action_reward
         initial_reward = reward
 
         step_multiplier = self.step_length
 
+        # POSITIVE: Throughput (vehicles completing their journey)
         reward += metrics.throughput * 10
 
-        normalized_waiting = metrics.waiting_time / step_multiplier
-        reward -= normalized_waiting * 0.01
-
-        reward += metrics.average_speed * 1.0
-
+        # Calculate current metrics for comparison
         total_queue = sum(metrics.queue_length.values())
-        reward -= total_queue * 0.5
+        normalized_waiting = metrics.waiting_time / step_multiplier
+        avg_speed = metrics.average_speed
 
+        # DELTA-BASED REWARDS: Reward improvements, penalize worsening
+        # This prevents unfair penalties when system naturally congests
+
+        # Queue length delta (reward reduction in queues)
+        queue_delta = self.prev_total_queue - total_queue
+        reward += queue_delta * 2.0
+
+        # Waiting time delta (reward reduction in waiting)
+        waiting_delta = self.prev_avg_waiting - normalized_waiting
+        reward += waiting_delta * 0.05
+
+        # Speed delta (reward speed increases)
+        speed_delta = avg_speed - self.prev_avg_speed
+        reward += speed_delta * 5.0
+
+        # Update previous metrics for next step
+        self.prev_total_queue = total_queue
+        self.prev_avg_waiting = normalized_waiting
+        self.prev_avg_speed = avg_speed
+
+        # ABSOLUTE PENALTIES: Still penalize severe conditions
+        # But with reduced weights to allow delta rewards to dominate
+        if total_queue > 20:  # Severe congestion
+            reward -= (total_queue - 20) * 0.1
+
+        if normalized_waiting > 50:  # Excessive waiting
+            reward -= (normalized_waiting - 50) * 0.01
+
+        # EMISSIONS: Small penalty
         normalized_emissions = metrics.emissions / step_multiplier
-        reward -= normalized_emissions * 0.0001
-        if metrics.travel_time > 60:  # More than 1 minute
-            reward -= (metrics.travel_time - 60) * 0.1
+        reward -= normalized_emissions * 0.00005  # Reduced weight
 
+        # BALANCE: Encourage balanced queue lengths across directions
         queue_values = list(metrics.queue_length.values())
         if queue_values and max(queue_values) > 0:
             balance_factor = min(queue_values) / max(queue_values)
-            reward += balance_factor * 10  # Aumentado de 5 para 10
+            reward += balance_factor * 5.0
 
-        if len(queue_values) > 1:
-            max_queue = max(queue_values)
-            min_queue = min(queue_values)
+        # DEBUG: Print reward breakdown for first few steps and every 100 steps
+        show_debug = False
+        if not hasattr(self, "step_counter"):
+            self.step_counter = 1
+            show_debug = True
+        elif self.step_counter < 10:
+            show_debug = True
+        elif self.step_counter % 100 == 0:
+            show_debug = True
 
-            if max_queue > 5:
-                imbalance = (max_queue - min_queue) / max(max_queue, 1)
-                penalty = imbalance * 2
-                reward -= penalty
-
-            west_queue = queue_values[3] if len(queue_values) > 3 else 0
-            if west_queue > 0:
-                west_reduction_bonus = max(0, 5 - west_queue) * 0.5
-                reward += west_reduction_bonus
-
-        # DEBUG: Print reward breakdown for first few steps
-        if hasattr(self, "step_counter") and self.step_counter < 10:
+        if show_debug:
             print(
-                f"DEBUG REWARD: step={getattr(self, 'step_counter', 0)}, "
-                f"initial={initial_reward:.1f}, "
+                f"DEBUG: step={self.step_counter}, "
                 f"throughput={metrics.throughput * 10:.1f}, "
-                f"waiting={-normalized_waiting * 0.01:.1f}, "
-                f"speed={metrics.average_speed * 1.0:.1f}, "
-                f"queues={-sum(metrics.queue_length.values()) * 0.5:.1f}, "
-                f"emissions={-normalized_emissions * 0.0001:.1f}, "
-                f"step_mult={step_multiplier:.1f}, "
+                f"queue_Δ={queue_delta * 2.0:.1f}, "
+                f"wait_Δ={waiting_delta * 0.05:.1f}, "
+                f"speed_Δ={speed_delta * 5.0:.1f}, "
+                f"queues={total_queue}, "
+                f"speed={avg_speed:.1f}m/s, "
                 f"final={reward:.1f}"
             )
-            self.step_counter += 1
-        elif not hasattr(self, "step_counter"):
-            self.step_counter = 1
+
+        self.step_counter += 1
 
         return reward
 
@@ -446,13 +491,28 @@ class SumoTrafficEnv:
         return waiting_times
 
     def _get_average_speed(self) -> float:
-        """Get average speed of all vehicles"""
-        vehicle_ids = traci.vehicle.getIDList()
-        if not vehicle_ids:
-            return 0
+        """Get average speed of all vehicles (optimized)"""
+        # Use cached vehicle IDs if available
+        if hasattr(self, '_cached_vehicle_ids') and self._cached_vehicle_ids is not None:
+            vehicle_ids = self._cached_vehicle_ids
+        else:
+            vehicle_ids = traci.vehicle.getIDList()
 
-        speeds = [traci.vehicle.getSpeed(veh_id) for veh_id in vehicle_ids]
-        return np.mean(speeds)
+        if not vehicle_ids:
+            return 0.0
+
+        # Use cached speed if we already calculated it in _calculate_metrics
+        if hasattr(self, '_cached_avg_speed') and self._cached_avg_speed is not None:
+            return self._cached_avg_speed
+
+        total_speed = 0.0
+        for veh_id in vehicle_ids:
+            try:
+                total_speed += traci.vehicle.getSpeed(veh_id)
+            except Exception:
+                continue
+
+        return total_speed / len(vehicle_ids) if vehicle_ids else 0.0
 
     def get_state_space_size(self) -> int:
         """Return the size of the state space"""

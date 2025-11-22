@@ -26,28 +26,28 @@
     <route id="west_to_north" edges="west_in north_out"/>
     <route id="west_to_south" edges="west_in south_out"/>
     
-    <!-- Traffic flows -->
+    <!-- Traffic flows (EASY MODE: 50% reduction for better learning) -->
     <!-- North flows -->
-    <flow id="flow_north_south" route="north_to_south" begin="0" end="3600" vehsPerHour="200" type="car"/>
-    <flow id="flow_north_east" route="north_to_east" begin="0" end="3600" vehsPerHour="100" type="car"/>
-    <flow id="flow_north_west" route="north_to_west" begin="0" end="3600" vehsPerHour="80" type="car"/>
-    
-    <!-- South flows -->
-    <flow id="flow_south_north" route="south_to_north" begin="0" end="3600" vehsPerHour="180" type="car"/>
-    <flow id="flow_south_east" route="south_to_east" begin="0" end="3600" vehsPerHour="90" type="car"/>
-    <flow id="flow_south_west" route="south_to_west" begin="0" end="3600" vehsPerHour="70" type="car"/>
-    
-    <!-- East flows (REDUZIDO: de 415 para 350 total) -->
-    <flow id="flow_east_west" route="east_to_west" begin="0" end="3600" vehsPerHour="180" type="car"/>
-    <flow id="flow_east_north" route="east_to_north" begin="0" end="3600" vehsPerHour="90" type="car"/>
-    <flow id="flow_east_south" route="east_to_south" begin="0" end="3600" vehsPerHour="80" type="car"/>
+    <flow id="flow_north_south" route="north_to_south" begin="0" end="3600" vehsPerHour="100" type="car"/>
+    <flow id="flow_north_east" route="north_to_east" begin="0" end="3600" vehsPerHour="50" type="car"/>
+    <flow id="flow_north_west" route="north_to_west" begin="0" end="3600" vehsPerHour="40" type="car"/>
 
-    <!-- West flows (AUMENTADO: de 360 para 380 total) -->
-    <flow id="flow_west_east" route="west_to_east" begin="0" end="3600" vehsPerHour="200" type="car"/>
-    <flow id="flow_west_north" route="west_to_north" begin="0" end="3600" vehsPerHour="100" type="car"/>
-    <flow id="flow_west_south" route="west_to_south" begin="0" end="3600" vehsPerHour="80" type="car"/>
-    
+    <!-- South flows -->
+    <flow id="flow_south_north" route="south_to_north" begin="0" end="3600" vehsPerHour="90" type="car"/>
+    <flow id="flow_south_east" route="south_to_east" begin="0" end="3600" vehsPerHour="45" type="car"/>
+    <flow id="flow_south_west" route="south_to_west" begin="0" end="3600" vehsPerHour="35" type="car"/>
+
+    <!-- East flows -->
+    <flow id="flow_east_west" route="east_to_west" begin="0" end="3600" vehsPerHour="90" type="car"/>
+    <flow id="flow_east_north" route="east_to_north" begin="0" end="3600" vehsPerHour="45" type="car"/>
+    <flow id="flow_east_south" route="east_to_south" begin="0" end="3600" vehsPerHour="40" type="car"/>
+
+    <!-- West flows -->
+    <flow id="flow_west_east" route="west_to_east" begin="0" end="3600" vehsPerHour="100" type="car"/>
+    <flow id="flow_west_north" route="west_to_north" begin="0" end="3600" vehsPerHour="50" type="car"/>
+    <flow id="flow_west_south" route="west_to_south" begin="0" end="3600" vehsPerHour="40" type="car"/>
+
     <!-- Add some trucks and buses for variety -->
-    <flow id="flow_trucks" route="north_to_south" begin="0" end="3600" vehsPerHour="20" type="truck"/>
-    <flow id="flow_buses" route="east_to_west" begin="0" end="3600" vehsPerHour="15" type="bus"/>
+    <flow id="flow_trucks" route="north_to_south" begin="0" end="3600" vehsPerHour="10" type="truck"/>
+    <flow id="flow_buses" route="east_to_west" begin="0" end="3600" vehsPerHour="8" type="bus"/>
 </routes>

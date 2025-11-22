@@ -194,7 +194,7 @@ class SumoQLearningAgent:
 
         # Track phase efficiency for analysis
         current_phase = int(state[8])
-        if current_phase in [0, 2]:  # Green phases only
+        if current_phase in [0, 4]:  # Green phases only (NS=0, EW=4)
             throughput = sumo_metrics.get("throughput", 0)
             self.phase_efficiency[current_phase].append(throughput)
 
