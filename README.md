@@ -34,7 +34,7 @@ python main.py --mode train --agent qlearning --episodes 50
 python main.py --mode train --agent qlearning --episodes 50 --no-gui --fast
 
 # Testar modelo treinado
-python main.py --mode test --load-model models/modelo_treinado.json
+python main.py --mode test --agent qlearning --load-model models/modelo_treinado.json
 
 # Para testar modelo já treinado com 100 episódios
 python main.py --mode test --agent qlearning --load-model examples/sumo_qlearning_final.json
