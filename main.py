@@ -229,6 +229,7 @@ class SumoTrafficController:
         self.agent.save_sumo_model(final_model_path)
         print(f"\nFinal model saved to {final_model_path}")
 
+        self.save_training_history()
         self.plot_training_results()
 
     def test(self):
@@ -565,6 +566,18 @@ PERFORMANCE INSIGHTS:
                 report += "Low average speed - Traffic moving slowly\n"
 
         return report
+
+    def save_training_history(self):
+        """Save training history to JSON for analysis"""
+        import json
+
+        os.makedirs("models", exist_ok=True)
+        history_path = "models/training_history.json"
+
+        with open(history_path, "w") as f:
+            json.dump(self.results, f, indent=2, default=str)
+
+        print(f"Training history saved to {history_path}")
 
     def plot_training_results(self):
         """Plot training results"""

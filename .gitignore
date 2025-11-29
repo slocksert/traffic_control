@@ -170,8 +170,11 @@ Thumbs.db
 wheels/
 *.whl
 
-# Generated results
 plots/
 results/
 *.png
 !examples/*.png
+*.txt
+*.csv
+
+experiments/
