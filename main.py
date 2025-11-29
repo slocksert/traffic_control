@@ -11,6 +11,9 @@ Usage:
 from src.environments.sumo_traffic_env import SumoTrafficEnv
 from src.agents.sumo_q_learning_agent import SumoQLearningAgent
 from src.agents.sumo_heuristic_agent import SumoHeuristicAgent
+from src.utils.data_persistence import TestResultsDatabase
+from src.analysis.generate_test_report import generate_test_report
+from src.analysis.generate_training_report import generate_training_report
 
 import argparse
 import sys
@@ -191,13 +194,23 @@ class SumoTrafficController:
         return episode_stats
 
     def train(self):
-        """Train the agent"""
+        """Train the agent and generate comprehensive learning analysis"""
         if not isinstance(self.agent, SumoQLearningAgent):
             print("Training is only available for Q-Learning agent")
             return
 
         num_eps = self.config["num_episodes"]
         print(f"\nStarting training for {num_eps} episodes...")
+
+        # Initialize database
+        db = TestResultsDatabase()
+
+        # Create training run entry
+        train_id = db.create_training_run(
+            agent_type=self.config["agent_type"], config=self.config
+        )
+
+        print(f"Training run ID: {train_id}")
 
         for episode in range(self.config["num_episodes"]):
             episode_stats = self.run_episode(episode, training=True)
@@ -207,6 +220,15 @@ class SumoTrafficController:
             self.results["avg_waiting_time"].append(episode_stats["avg_waiting_time"])
             self.results["throughput"].append(episode_stats["total_throughput"])
             self.results["avg_speed"].append(episode_stats["avg_speed"])
+
+            # Save to database (batch mode - no auto commit)
+            db.add_training_episode(
+                train_id, episode_stats, epsilon=self.agent.epsilon, auto_commit=False
+            )
+
+            # Commit batch every 10 episodes for safety
+            if (episode + 1) % 10 == 0:
+                db.commit_batch(train_id)
 
             if (episode + 1) % self.config.get("save_interval", 50) == 0:
                 ep_num = episode + 1
@@ -229,13 +251,63 @@ class SumoTrafficController:
         self.agent.save_sumo_model(final_model_path)
         print(f"\nFinal model saved to {final_model_path}")
 
+        # Final batch commit and update epsilon
+        db.commit_batch(train_id)
+        db.update_final_epsilon(train_id, self.agent.epsilon)
+
         self.save_training_history()
         self.plot_training_results()
 
+        # Generate comprehensive training report
+        print(f"\n{'='*50}")
+        print("GENERATING COMPREHENSIVE TRAINING REPORT")
+        print(f"{'='*50}")
+
+        try:
+            # Get data from database
+            df = db.get_training_results(train_id)
+            train_info = db.get_training_info(train_id)
+
+            # Generate complete report with learning curves and analysis
+            generate_training_report(
+                df, train_info, output_dir="training_results"
+            )
+
+            print("\n✓ Relatório de treinamento gerado com sucesso!")
+            print("✓ Localização: {report_dir}")
+            print("\nArquivos principais:")
+            print(
+                "  • relatorio_treinamento.txt - Relatório com análise de aprendizado"
+            )
+            print("  • curvas_aprendizado.png - Curvas de aprendizado (6 gráficos)")
+            print("  • progresso_aprendizado.csv - Tabela de progresso")
+            print("  • dados_treinamento.json - Dados completos em JSON")
+
+        except Exception as e:
+            print(f"\n⚠ Erro ao gerar relatório de treinamento: {e}")
+            import traceback
+
+            traceback.print_exc()
+
+        finally:
+            db.close()
+
     def test(self):
-        """Test the agent"""
+        """Test the agent and generate comprehensive analysis report"""
         test_eps = self.config["test_episodes"]
         print(f"\nStarting testing for {test_eps} episodes...")
+
+        # Initialize database
+        db = TestResultsDatabase()
+
+        # Create test run entry
+        run_id = db.create_test_run(
+            agent_type=self.config["agent_type"],
+            model_path=self.config.get("load_model"),
+            config=self.config,
+        )
+
+        print(f"Test run ID: {run_id}")
 
         test_results = []
 
@@ -243,6 +315,13 @@ class SumoTrafficController:
             episode_stats = self.run_episode(episode, training=False)
             test_results.append(episode_stats)
 
+            # Save to database (batch mode - no auto commit)
+            db.add_episode_result(run_id, episode_stats, auto_commit=False)
+
+        # Final commit for all test episodes
+        db.commit_test_batch(run_id)
+
+        # Calculate summary statistics
         avg_reward = np.mean([r["total_reward"] for r in test_results])
         avg_waiting_time = np.mean([r["avg_waiting_time"] for r in test_results])
         avg_throughput = np.mean([r["total_throughput"] for r in test_results])
@@ -261,6 +340,39 @@ class SumoTrafficController:
             self.agent.print_sumo_stats()
         elif hasattr(self.agent, "print_statistics"):
             self.agent.print_statistics()
+
+        # Generate comprehensive test report
+        print(f"\n{'='*50}")
+        print("GENERATING COMPREHENSIVE TEST REPORT")
+        print(f"{'='*50}")
+
+        try:
+            # Get data from database
+            df = db.get_run_results(run_id)
+            run_info = db.get_run_info(run_id)
+
+            # Generate complete report with graphs, tables, and analysis
+            generate_test_report(df, run_info, output_dir="test_results")
+
+            print("\n✓ Relatório completo gerado com sucesso!")
+            print("✓ Localização: {report_dir}")
+            print("\nArquivos principais:")
+            print(
+                "  • relatorio_completo.txt - Relatório em texto com análise crítica"
+            )
+            print("  • grafico_desempenho_geral.png - Gráficos de desempenho")
+            print("  • grafico_metricas_erro.png - Análise de erros")
+            print("  • tabela_metricas.csv - Tabela de métricas")
+            print("  • dados_completos.json - Dados completos em JSON")
+
+        except Exception as e:
+            print(f"\n⚠ Erro ao gerar relatório: {e}")
+            import traceback
+
+            traceback.print_exc()
+
+        finally:
+            db.close()
 
     def demo(self):
         """Run interactive demo"""

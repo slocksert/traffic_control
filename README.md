@@ -10,6 +10,9 @@ Sistema inteligente de controle de trafego usando SUMO com Q-Learning e algoritm
 # Instalar dependencias Python
 pip install -r requirements.txt
 
+# Nota: SQLite já vem incluído no Python (biblioteca padrão)
+# Não é necessário instalar separadamente
+
 # Instalar SUMO (Simulation of Urban Mobility)
 # Ubuntu/Debian:
 sudo apt install sumo sumo-tools sumo-doc
@@ -36,8 +39,15 @@ python main.py --mode train --agent qlearning --episodes 50 --no-gui --fast
 # Testar modelo treinado
 python main.py --mode test --agent qlearning --load-model models/modelo_treinado.json
 
-# Para testar modelo já treinado com 100 episódios
-python main.py --mode test --agent qlearning --load-model examples/sumo_qlearning_final.json
+# Para testar modelo já treinado
+python main.py --mode test --agent qlearning --load-model examples/sumo_qlearning_final.json --episodes 10
+
+# O teste gera automaticamente uma pasta com:
+# - Gráficos de desempenho
+# - Tabelas de métricas
+# - Análise crítica dos resultados
+# - Métricas de erro (RMSE, MAE)
+# Veja RESULTADOS_TESTE.md para mais detalhes
 ```
 
 ## Features

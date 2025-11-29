@@ -143,15 +143,17 @@ data/
 models/
 !examples/
 
-# Temporary files
+# Temporary files (but not src/analysis/ files!)
 *_debug_*.py
-*_test_*.py
 debug_*.py
-test_*.py
 quick_test.py
 temp_*.py
 *.tmp
 *.bak
+
+# Test scripts in root only (not in src/)
+/test_*.py
+/*_test_*.py
 
 # Data files
 *.csv
@@ -174,7 +176,12 @@ plots/
 results/
 *.png
 !examples/*.png
+
+# Ignore generated report files but not source code
+/test_results/
+/training_results/
 *.txt
+!RESULTADOS_TESTE.md
 *.csv
 
 experiments/
